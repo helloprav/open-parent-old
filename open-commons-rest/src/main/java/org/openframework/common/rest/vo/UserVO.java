@@ -43,7 +43,7 @@ public class UserVO extends BaseVO {
 	private String phone;
 	@Length(max=500, message="length should not be more than 500 characters")
 	private String description;
-	@NotNull(message = "status is required")
+
 	private String status;
 	@NotNull(message = "role is required")
 	private String role;
