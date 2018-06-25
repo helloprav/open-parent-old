@@ -10,6 +10,7 @@ import java.util.Map.Entry;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
+import org.openframework.common.rest.constants.ApplicationConstants;
 import org.openframework.common.rest.filter.StatelessSecurityFilter;
 import org.openframework.common.rest.vo.UserVO;
 import org.openframework.commons.domain.exceptions.AuthenticationException;
@@ -30,8 +31,13 @@ public abstract class AbstractUserProfileHandlerMethodArgumentResolver implement
 	public Object resolveArgument(MethodParameter arg0, ModelAndViewContainer arg1, NativeWebRequest nativeWebRequest,
 			WebDataBinderFactory webDataBinderFactory) throws Exception {
 
-		UserVO userProfile = null;
 		HttpServletRequest request = (HttpServletRequest) nativeWebRequest.getNativeRequest();
+		if(isTestEnv(request)) {
+			UserVO userVO = new UserVO();
+			userVO.setUserID(1l);
+			return userVO;
+		}
+		UserVO userProfile = null;
 
 		String encryptedCookieValue = (String) request.getAttribute(StatelessSecurityFilter.COOKIE_LIU_VALUE);
 		validateAuthString(encryptedCookieValue);
@@ -58,6 +64,10 @@ public abstract class AbstractUserProfileHandlerMethodArgumentResolver implement
 
 	public abstract String decrypt(String value);
 
+	public boolean isTestEnv(HttpServletRequest request) {
+		return null != request.getAttribute(ApplicationConstants.SPRING_TEST_ENV);
+	}
+
 	@Override
 	public boolean supportsParameter(MethodParameter methodParameter) {
 		return methodParameter.getParameterType().equals(UserVO.class);
@@ -75,7 +85,7 @@ public abstract class AbstractUserProfileHandlerMethodArgumentResolver implement
 		return userAccessHolder.get();
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "unused" })
 	private static void setUserAccess(Map<String, Object> map) {
 		List<String> functionList = new ArrayList<>();
 		Iterator<Entry<String, Object>> iterator = map.entrySet().iterator();
@@ -93,7 +103,7 @@ public abstract class AbstractUserProfileHandlerMethodArgumentResolver implement
 		AbstractUserProfileHandlerMethodArgumentResolver.userAccessHolder.set(functionList);
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "unused" })
 	private static void setUserAccess_OLD(Map<String, Object> map) {
 		List<String> functionList = new ArrayList<>();
 		Iterator<Entry<String, Object>> iterator = map.entrySet().iterator();

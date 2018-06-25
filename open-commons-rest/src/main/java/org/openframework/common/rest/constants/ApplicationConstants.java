@@ -8,5 +8,6 @@ public class ApplicationConstants {
 	public static final String MESSAGE_TYPE_DASHBOARD = "dashboard";
 	public static final String DEFAULT = "DEFAULT";
 
+	public static final String SPRING_TEST_ENV = "springTestEnv";
 
 }

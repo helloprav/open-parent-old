@@ -1,5 +1,6 @@
 package org.openframework.common.rest.advice;
 
+import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -60,6 +61,9 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
  */
 @ControllerAdvice(annotations = RestController.class)
 public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionHandler {
+
+	private static final String LENGTH = "Length";
+	private static final String STR_DOT = ".";
 
 	private Logger log = LoggerFactory.getLogger(getClass());
 
@@ -188,11 +192,16 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
 			localeErrorProperties = messageResourceAS.get().getMessageResourceMap().get(Constants.MESSAGE_TYPE_ERRORS)
 					.getPropertiesMap().get(currentLocale.getLanguage().toUpperCase());
 
+			if(LENGTH.equals(fieldError.getCode())) {
+				errorMessage = getErrorMessageForLength(fieldError, localeErrorProperties);
+			}
 			/*
 			 * Build the errorMessage based on the VO's annotation message
 			 * [@NotNull(message="{NotNull.name}")] i.e. "NotNull.name".
 			 */
-			errorMessage = localeErrorProperties.getProperty(fieldError.getDefaultMessage());
+			if (null == errorMessage) {
+				errorMessage = localeErrorProperties.getProperty(fieldError.getDefaultMessage());
+			}
 			if (null == errorMessage) {
 				// If its's value in errorMessage Property file is null, then
 				errorMessage = localeErrorProperties.getProperty(fieldError.getCode() + "." + fieldError.getField());
@@ -207,6 +216,17 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
 			}
 		}
 		return errorMessage;
+	}
+
+	private String getErrorMessageForLength(FieldError fieldError, Properties localeErrorProperties) {
+
+		String errorMessage = localeErrorProperties.getProperty(fieldError.getCode());
+		return MessageFormat.format(errorMessage, getFieldName(fieldError), fieldError.getArguments()[2], fieldError.getArguments()[1]);
+	}
+
+	private Object getFieldName(FieldError fieldError) {
+
+		return fieldError.getObjectName().concat(STR_DOT).concat(fieldError.getField());
 	}
 
 	/**
