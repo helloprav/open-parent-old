@@ -130,5 +130,8 @@ public class UserVO extends BaseVO {
 		this.otherData = otherData;
 	}
 
-
+	@Override
+	public String toString() {
+		return this.getClass().getSimpleName()+"[id="+this.getUserID()+", email="+getEmail()+"]";
+	}
 }

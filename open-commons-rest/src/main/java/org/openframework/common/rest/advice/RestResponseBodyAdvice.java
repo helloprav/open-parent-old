@@ -10,6 +10,8 @@ import org.openframework.common.rest.Constants;
 import org.openframework.common.rest.beans.ErrorBean;
 import org.openframework.common.rest.beans.ResponseBean;
 import org.openframework.common.rest.vo.BaseVO;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
@@ -22,6 +24,11 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
 
 @ControllerAdvice//(annotations=RestController.class)
 public class RestResponseBodyAdvice implements ResponseBodyAdvice<Object> {
+
+	protected Logger logger = LoggerFactory.getLogger(getClass());
+
+	//TODO Make this configurable for this maven project
+	private boolean convertToList = false;
 
 	@Override
 	public boolean supports(MethodParameter returnType, Class<? extends HttpMessageConverter<?>> converterType) {
@@ -47,8 +54,9 @@ public class RestResponseBodyAdvice implements ResponseBodyAdvice<Object> {
 			responseBean.setResponseTime(elapsedTime);
 			responseBean.setSuccessMessage(Constants.STRING_OK);
 			responseBean.setStatusCode(servletResponse.getStatus());
+			logger.info("responseBean: {}", responseBean);
 			return responseBean;
-		} else if (body instanceof BaseVO) {
+		} else if (body instanceof BaseVO && convertToList) {
 			/**
 			 * This approach is not suggested. More Read:
 			 * https://www.narwhl.com/resource-specific-responses/
@@ -60,6 +68,15 @@ public class RestResponseBodyAdvice implements ResponseBodyAdvice<Object> {
 			responseBean.setResponseTime(elapsedTime);
 			responseBean.setSuccessMessage(Constants.STRING_OK);
 			responseBean.setStatusCode(servletResponse.getStatus());
+			logger.info("responseBean: {}", responseBean);
+			return responseBean;
+		} else if (body instanceof BaseVO) {
+			ResponseBean<Object> responseBean = new ResponseBean<>();
+			responseBean.setData(body);
+			responseBean.setResponseTime(elapsedTime);
+			responseBean.setSuccessMessage(Constants.STRING_OK);
+			responseBean.setStatusCode(servletResponse.getStatus());
+			logger.info("responseBean: {}", responseBean);
 			return responseBean;
 		} else if (body instanceof ResponseBean) {
 			/**
@@ -67,6 +84,7 @@ public class RestResponseBodyAdvice implements ResponseBodyAdvice<Object> {
 			 */
 			servletResponse.setStatus(((ResponseBean<Object>) body).getStatusCode());
 			((ResponseBean<Object>) body).setResponseTime(elapsedTime);
+			logger.info("body: {}", body);
 			return body;
 		} else if (body instanceof ErrorBean) {
 			/**
@@ -79,8 +97,10 @@ public class RestResponseBodyAdvice implements ResponseBodyAdvice<Object> {
 			responseBean.setResponseTime(elapsedTime);
 			responseBody = responseBean;
 		} else {
+			logger.info("body: {}", body);
 			return body;
 		}
+		logger.info("responseBody: {}", responseBody);
 		return responseBody;
 	}
 }

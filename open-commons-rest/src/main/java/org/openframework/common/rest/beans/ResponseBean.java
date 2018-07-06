@@ -80,4 +80,9 @@ public class ResponseBean<T> extends ErrorBean {
 		this.successMessage = successMessage;
 	}
 
+	@Override
+	public String toString() {
+
+		return this.getClass().getSimpleName()+"[responseTime="+getResponseTime()+", statusCode="+getStatusCode()+", data="+data+"]";
+	}
 }
