@@ -19,7 +19,7 @@ import org.springframework.format.annotation.NumberFormat.Style;
  */
 public class UserVO extends BaseVO {
 
-	private Long userID;
+	private Long id;
 
 	//@Digits(integer=8, fraction=0, message = "Invalid admNo") // this validation annotation is not working
 	@Range(min = 20000000, max = 20999999, message= "field value should be between 20000000 and 20999999")
@@ -50,11 +50,11 @@ public class UserVO extends BaseVO {
 
 	private Map<String, Object> otherData;
 
-	public Long getUserID() {
-		return userID;
+	public Long getId() {
+		return id;
 	}
-	public void setUserID(Long userID) {
-		this.userID = userID;
+	public void setId(Long userID) {
+		this.id = userID;
 	}
 	public Long getAdmissionNo() {
 		return admissionNo;
@@ -132,6 +132,6 @@ public class UserVO extends BaseVO {
 
 	@Override
 	public String toString() {
-		return this.getClass().getSimpleName()+"[id="+this.getUserID()+", email="+getEmail()+"]";
+		return this.getClass().getSimpleName()+"[id="+this.getId()+", email="+getEmail()+"]";
 	}
 }

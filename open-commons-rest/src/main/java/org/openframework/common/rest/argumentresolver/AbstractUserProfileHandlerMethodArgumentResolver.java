@@ -34,7 +34,7 @@ public abstract class AbstractUserProfileHandlerMethodArgumentResolver implement
 		HttpServletRequest request = (HttpServletRequest) nativeWebRequest.getNativeRequest();
 		if(isTestEnv(request)) {
 			UserVO userVO = new UserVO();
-			userVO.setUserID(1l);
+			userVO.setId(1l);
 			return userVO;
 		}
 		UserVO userProfile = null;
@@ -87,24 +87,6 @@ public abstract class AbstractUserProfileHandlerMethodArgumentResolver implement
 
 	@SuppressWarnings({ "unchecked", "unused" })
 	private static void setUserAccess(Map<String, Object> map) {
-		List<String> functionList = new ArrayList<>();
-		Iterator<Entry<String, Object>> iterator = map.entrySet().iterator();
-		while (iterator.hasNext()) {
-			Entry<String, Object> object = iterator.next();
-			if(object.getValue() instanceof List) {
-				List<String> list = (List<String>) object.getValue();
-				ListIterator<String> iterator2 = list.listIterator();
-				while (iterator2.hasNext()) {
-					String string = iterator2.next();
-					functionList.add(string);
-				}
-			}
-		}
-		AbstractUserProfileHandlerMethodArgumentResolver.userAccessHolder.set(functionList);
-	}
-
-	@SuppressWarnings({ "unchecked", "unused" })
-	private static void setUserAccess_OLD(Map<String, Object> map) {
 		List<String> functionList = new ArrayList<>();
 		Iterator<Entry<String, Object>> iterator = map.entrySet().iterator();
 		while (iterator.hasNext()) {
